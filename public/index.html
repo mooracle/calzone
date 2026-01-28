@@ -147,6 +147,81 @@
       height: 20px;
       fill: currentColor;
     }
+    .converter {
+      background: #0d1117;
+      border: 1px solid #30363d;
+      border-radius: 12px;
+      padding: 24px;
+    }
+    .converter input {
+      width: 100%;
+      background: #161b22;
+      border: 1px solid #30363d;
+      border-radius: 8px;
+      padding: 14px 16px;
+      font-family: 'SF Mono', 'Fira Code', monospace;
+      font-size: 0.875rem;
+      color: #f0f0f0;
+      margin-bottom: 16px;
+      outline: none;
+      transition: border-color 0.2s;
+    }
+    .converter input:focus {
+      border-color: #f4a261;
+    }
+    .converter input::placeholder {
+      color: #6e7681;
+    }
+    .output-wrapper {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      background: #161b22;
+      border: 1px solid #30363d;
+      border-radius: 8px;
+      padding: 14px 16px;
+      min-height: 48px;
+    }
+    .output-wrapper.success {
+      border-color: #7ee787;
+    }
+    #output {
+      flex: 1;
+      font-family: 'SF Mono', 'Fira Code', monospace;
+      font-size: 0.875rem;
+      color: #7ee787;
+      word-break: break-all;
+    }
+    #output.placeholder {
+      color: #6e7681;
+    }
+    #output.error {
+      color: #f85149;
+    }
+    .copy-btn {
+      background: #f4a261;
+      border: none;
+      border-radius: 6px;
+      padding: 8px 16px;
+      color: #1a1a2e;
+      font-family: 'Montserrat', sans-serif;
+      font-size: 0.75rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.2s;
+      white-space: nowrap;
+    }
+    .copy-btn:hover {
+      background: #e76f51;
+    }
+    .copy-btn:disabled {
+      background: #30363d;
+      color: #6e7681;
+      cursor: not-allowed;
+    }
+    .copy-btn.copied {
+      background: #7ee787;
+    }
     @media (max-width: 480px) {
       .logo h1 {
         font-size: 2rem;
@@ -185,6 +260,17 @@
     </div>
 
     <div class="section">
+      <h2>Convert Your URL</h2>
+      <div class="converter">
+        <input type="text" id="input" placeholder="Paste your Outlook calendar URL here..." autocomplete="off">
+        <div class="output-wrapper" id="output-wrapper">
+          <span id="output" class="placeholder">Converted URL will appear here</span>
+          <button class="copy-btn" id="copy-btn" disabled>Copy</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="section">
       <h2>Add to Google Calendar</h2>
       <ol class="steps">
         <li>Open Google Calendar</li>
@@ -204,5 +290,52 @@
     No data stored. No accounts required.<br>
     Built by <a href="https://mooracle.io">Mooracle</a>
   </div>
+  <script>
+    const input = document.getElementById('input');
+    const output = document.getElementById('output');
+    const outputWrapper = document.getElementById('output-wrapper');
+    const copyBtn = document.getElementById('copy-btn');
+
+    input.addEventListener('input', () => {
+      const url = input.value.trim();
+
+      if (!url) {
+        output.textContent = 'Converted URL will appear here';
+        output.className = 'placeholder';
+        outputWrapper.classList.remove('success');
+        copyBtn.disabled = true;
+        return;
+      }
+
+      if (!url.includes('outlook.office365.com')) {
+        output.textContent = 'Please enter a valid Outlook calendar URL';
+        output.className = 'error';
+        outputWrapper.classList.remove('success');
+        copyBtn.disabled = true;
+        return;
+      }
+
+      const converted = url.replace('outlook.office365.com', 'calzone.mooracle.io');
+      output.textContent = converted;
+      output.className = '';
+      outputWrapper.classList.add('success');
+      copyBtn.disabled = false;
+    });
+
+    copyBtn.addEventListener('click', async () => {
+      try {
+        await navigator.clipboard.writeText(output.textContent);
+        copyBtn.textContent = 'Copied!';
+        copyBtn.classList.add('copied');
+        setTimeout(() => {
+          copyBtn.textContent = 'Copy';
+          copyBtn.classList.remove('copied');
+        }, 2000);
+      } catch (err) {
+        copyBtn.textContent = 'Failed';
+        setTimeout(() => copyBtn.textContent = 'Copy', 2000);
+      }
+    });
+  </script>
 </body>
 </html>
