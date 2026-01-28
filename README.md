@@ -40,6 +40,8 @@ Then add to Google Calendar:
 
 ## Deploy Your Own
 
+[![Deploy to Cloudflare](https://deploy.workers.cloudflare.com/button)](https://deploy.workers.cloudflare.com/?url=https://github.com/mooracle/calzone)
+
 ### Prerequisites
 
 - [Node.js](https://nodejs.org/) 18+
